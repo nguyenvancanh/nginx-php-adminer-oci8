@@ -2,7 +2,7 @@ FROM php:7-fpm
 
 # install nginx
 
-RUN apt-get update && apt-get install -y \
+RUN rm /etc/apt/preferences.d/no-debian-php && apt-get update && apt-get install -y \
     nginx \
     wget \
     alien \
@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     libmcrypt-dev \
-    libpng12-dev \
+    libpng-dev \
     libmcrypt-dev \
     libicu-dev \
     libsqlite3-dev \
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     libcurl3-dev \
     libxml2-dev \
     libzzip-dev \
+    libzip-dev \
     --no-install-recommends apt-utils \
     && rm -r /var/lib/apt/lists/*
 
@@ -41,21 +42,20 @@ RUN rm -r -f /oracle-client/oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.r
 ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
 ENV PKG_CONFIG_PATH /oracle-client/
 
-RUN echo 'instantclient,/usr/lib/oracle/12.1/client64/lib/' | pecl install oci8
+RUN echo 'instantclient,/usr/lib/oracle/12.1/client64/lib/' | pecl install oci8 mcrypt-1.0.2
 
-
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr,12.1 \
+RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracle/12.1/client64/lib/ \
     && docker-php-ext-install \
         gd \
         bcmath \
         pdo_mysql \
         pdo_pgsql \
-        mcrypt \
         zip \
         mysqli \
         pdo_oci \
     && docker-php-ext-enable \
-        oci8
+        oci8 \
+        mcrypt
 
 COPY default.conf /etc/nginx/sites-enabled/default
 
