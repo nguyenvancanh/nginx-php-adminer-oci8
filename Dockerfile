@@ -31,20 +31,20 @@ RUN rm /etc/apt/preferences.d/no-debian-php && apt-get update && apt-get install
     && rm -r /var/lib/apt/lists/*
 
 COPY ./oracle_client /oracle-client
-RUN alien -i /oracle-client/oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm && \
-    alien -i /oracle-client/oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm && \
-    alien -i /oracle-client/oracle-instantclient12.1-devel-12.1.0.2.0-1.x86_64.rpm
+RUN alien --scripts -i /oracle-client/oracle-instantclient19.3-basiclite-19.3.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /oracle-client/oracle-instantclient19.3-sqlplus-19.3.0.0.0-1.x86_64.rpm && \
+    alien --scripts -i /oracle-client/oracle-instantclient19.3-devel-19.3.0.0.0-1.x86_64.rpm
 
-RUN rm -r -f /oracle-client/oracle-instantclient12.1-basic-12.1.0.2.0-1.x86_64.rpm && \
-    rm -r -f /oracle-client/oracle-instantclient12.1-sqlplus-12.1.0.2.0-1.x86_64.rpm && \
-    rm -r -f /oracle-client/oracle-instantclient12.1-devel-12.1.0.2.0-1.x86_64.rpm
+RUN rm -r -f /oracle-client/oracle-instantclient19.3-basiclite-19.3.0.0.0-1.x86_64.rpm && \
+    rm -r -f /oracle-client/oracle-instantclient19.3-sqlplus-19.3.0.0.0-1.x86_64.rpm && \
+    rm -r -f /oracle-client/oracle-instantclient19.3-devel-19.3.0.0.0-1.x86_64.rpm
 
-ENV LD_LIBRARY_PATH /usr/lib/oracle/12.1/client64/lib/
+ENV LD_LIBRARY_PATH /usr/lib/oracle/19.3/client64/lib/
 ENV PKG_CONFIG_PATH /oracle-client/
 
-RUN echo 'instantclient,/usr/lib/oracle/12.1/client64/lib/' | pecl install oci8 mcrypt-1.0.2
+RUN echo 'instantclient,/usr/lib/oracle/19.3/client64/lib/' | pecl install oci8 mcrypt-1.0.2
 
-RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracle/12.1/client64/lib/ \
+RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracle/19.3/client64/lib/ \
     && docker-php-ext-install \
         gd \
         bcmath \
