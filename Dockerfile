@@ -62,7 +62,7 @@ COPY default.conf /etc/nginx/sites-enabled/default
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install adminer and default theme
-RUN wget http://www.adminer.org/latest.php -O /var/www/index.php
+RUN wget https://github.com/vrana/adminer/releases/download/v4.7.2/adminer-4.7.2.php -O /var/www/index.php
 RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
 WORKDIR /var/www
 
