@@ -42,9 +42,20 @@ RUN rm -r -f /oracle-client/oracle-instantclient19.3-basiclite-19.3.0.0.0-1.x86_
 ENV LD_LIBRARY_PATH /usr/lib/oracle/19.3/client64/lib/
 ENV PKG_CONFIG_PATH /oracle-client/
 
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y \
+    unixodbc \
+    unixodbc-dev\
+    freetds-bin \
+    freetds-dev \
+    freetds-common
+
 RUN echo 'instantclient,/usr/lib/oracle/19.3/client64/lib/' | pecl install oci8 mcrypt-1.0.2
 
+RUN ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
+
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracle/19.3/client64/lib/ \
+    && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr  \
     && docker-php-ext-install \
         gd \
         bcmath \
@@ -53,16 +64,20 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracl
         zip \
         mysqli \
         pdo_oci \
+        pdo_odbc \
+        pdo_dblib \
     && docker-php-ext-enable \
         oci8 \
-        mcrypt
+        mcrypt \
+        pdo_odbc \
+        pdo_dblib
 
 COPY default.conf /etc/nginx/sites-enabled/default
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install adminer and default theme
-RUN wget https://github.com/vrana/adminer/releases/download/v4.7.2/adminer-4.7.2.php -O /var/www/index.php
+RUN wget https://github.com/vrana/adminer/releases/download/v4.7.5/adminer-4.7.5.php -O /var/www/index.php
 RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
 WORKDIR /var/www
 
