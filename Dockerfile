@@ -54,6 +54,7 @@ RUN echo 'instantclient,/usr/lib/oracle/19.3/client64/lib/' | pecl install oci8 
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libsybdb.a /usr/lib/
 
+RUN pecl install mongodb
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracle/19.3/client64/lib/ \
     && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr  \
     && docker-php-ext-install \
@@ -70,14 +71,15 @@ RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/usr/lib/oracl
         oci8 \
         mcrypt \
         pdo_odbc \
-        pdo_dblib
+        pdo_dblib \
+        mongodb
 
 COPY default.conf /etc/nginx/sites-enabled/default
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Install adminer and default theme
-RUN wget https://github.com/vrana/adminer/releases/download/v4.7.5/adminer-4.7.5.php -O /var/www/index.php
+RUN wget https://github.com/vrana/adminer/releases/download/v4.7.6/adminer-4.7.6.php -O /var/www/index.php
 RUN wget https://raw.github.com/vrana/adminer/master/designs/hever/adminer.css -O /var/www/adminer.css
 WORKDIR /var/www
 
